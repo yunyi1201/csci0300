@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 /**
  * In this file, you will find the partial implementation of common doubly
@@ -27,6 +28,7 @@ int length_list(node_t* head_list) {
   node_t* current = head_list;
   while (current) {
     len++;
+    current = current->next;
   }
   return len;
 }
@@ -36,7 +38,11 @@ int length_list(node_t* head_list) {
  *
  * given pointer to the head of the list
  */
-void* get_first(node_t* head_list) { return head_list->data; }
+void* get_first(node_t* head_list) { 
+  if (!head_list) 
+    return NULL;
+  return head_list->data; 
+}
 
 /** returns the value of the last element of the list
  *
@@ -61,7 +67,30 @@ void* get_last(node_t* head_list) {
  *
  * returns nothing
  */
-void insert_first(node_t** head_list, void* to_add, size_t size) { return; }
+void insert_first(node_t** head_list, void* to_add, size_t size) { 
+
+  if (!head_list) 
+    return ;
+  
+  void *new_data = malloc(size);
+  assert(new_data);
+  memcpy(new_data, to_add, size);
+
+  node_t* new_element = (node_t *) malloc(sizeof(node_t));
+  assert(new_element);
+  new_element->next = new_element->prev = NULL;
+  new_element->data = new_data;
+
+  
+  if (!(*head_list)) {
+    *head_list = new_element;
+    return ;
+  }
+
+  new_element->next = *head_list;
+  (*head_list)->prev = new_element;
+  *head_list = new_element;
+}
 
 /**
  * inserts element at the end of the linked list
@@ -76,8 +105,10 @@ void insert_last(node_t** head_list, void* to_add, size_t size) {
     return;
   }
   node_t* new_element = (node_t*)malloc(sizeof(node_t));
-  void* new_data = malloc(size - 1);
-  memcpy(new_data, to_add, size - 1);
+  void* new_data = malloc(size);
+  memcpy(new_data, to_add, size);
+
+  new_element->prev = new_element->next = NULL;
   new_element->data = new_data;
 
   if (!(*head_list)) {  // means the list is empty
@@ -105,7 +136,20 @@ void insert_last(node_t** head_list, void* to_add, size_t size) {
  *
  * returns the string associated with an index into the linked list
  */
-void* get(node_t* head_list, int index) { return NULL; }
+void* get(node_t* head_list, int index) {
+  int length = length_list(head_list);
+
+  if (length <= index)  
+    return NULL;
+
+  node_t* curr = head_list;
+  while (index > 0) {
+    curr = curr->next;
+    index--;
+  }
+
+  return curr->data;
+}
 
 /**
  * removes element from linked list
@@ -150,19 +194,26 @@ int remove_element(node_t **head_list, void *to_remove, size_t size) {
  */
 void reverse_helper(node_t** head_list) {
   node_t* curr = *head_list;
-  node_t* placeholder = NULL;
-  if (curr->next) {
-    while (curr) {
-      if (!curr->next) {
-        *head_list = curr;
-      }
-      curr->prev = curr->next;
-      curr->next = placeholder;
-      placeholder = curr;
-      curr = curr->prev;
-    }
+
+  if (!curr)
+    return ;
+  
+  node_t* new_head = curr->next;
+  curr->next = NULL;
+
+  while (new_head) {
+    node_t* temp = new_head->next;
+    new_head->next = curr;
+    curr->prev = new_head;
+
+    curr = new_head;  
+    new_head = temp;
   }
+
+  curr->prev = NULL;
+  *head_list = curr;
 }
+
 
 /**
  * calls a helper function that reverses the linked list
@@ -196,10 +247,10 @@ void* remove_first(node_t** head_list) {
     (*head_list)->prev = NULL;
   }
 
-  free(curr->data);
+  void *data = curr->data;
   free(curr);
 
-  return curr->data;
+  return data;
 }
 
 /** TODO: implement this!
@@ -210,4 +261,26 @@ void* remove_first(node_t** head_list) {
  * returns the void pointer of the element removed
  *
  */
-void* remove_last(node_t** head_list) { return NULL; }
+void* remove_last(node_t** head_list) { 
+  if (!*(head_list))  
+    return NULL;
+  
+  node_t* last = *head_list;
+  node_t* prev = NULL;
+  
+  while (last->next) {
+    prev = last;
+    last = last->next;
+  }
+  
+  if (prev == NULL) {
+    *head_list = NULL;
+  } else {
+    prev->next = NULL;
+  }
+  
+  void* data = last->data;
+  free(last);
+
+  return data; 
+}

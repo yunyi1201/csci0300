@@ -95,9 +95,12 @@ void test_student_implementation() {
 
   char* removed_one = remove_last(&one_list);
 
+  printf("removed_one %s, after_remove %p\n", removed_one, one_list);
+
   assert(!strcmp(removed_one, "systems"));
   free(removed_one);
 
+  printf("one_list->str %s\n", one_list->data);
   assert(length_list(one_list) == 1);
   assert(!one_list->next);
   assert(!one_list->prev);
