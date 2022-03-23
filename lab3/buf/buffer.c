@@ -6,7 +6,7 @@
 
 // unused...?
 void hack() {
-	printf("you've been hacked!\n");
+	printf("oooooooooooooooooooooooooooooooooooooooooooo\n");
 	exit(0);
 }
 
