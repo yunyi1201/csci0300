@@ -5,7 +5,7 @@
 # consult course resources, a TA or the internet.
 
 # Targets that our compilation produces
-EXEC := w01-byte matrixMultiply	# Executables
+EXEC := w01-byte matrixMultiply	w02-byte w03-byte# Executables
 
 # The compiler we use (do we need a specific version?)
 CC := gcc
